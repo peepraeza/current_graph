@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+  <title>Web Appliacation</title>
+</head>
+<body>
+
+<p id="text1">Date : </p>
+<div id='chart'></div>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDpGnx7IS0Rx1jj2jmKKTqOyVV7z8Pl8xg",
+    authDomain: "test-project-4211f.firebaseapp.com",
+    databaseURL: "https://test-project-4211f.firebaseio.com",
+    projectId: "test-project-4211f",
+    storageBucket: "test-project-4211f.appspot.com",
+    messagingSenderId: "150593344917"
+  };
+  firebase.initializeApp(config);
+  var database = firebase.database();
+ var ref = database.ref("data");
+
+// function loaddata(callback){
+  var data = []
+  i = 0
+
+  ref.limitToLast(199).on('child_added', function(snapshot) {
+      var changedData = snapshot.val();    
+
+      var x =  changedData.x;
+      var y =  changedData.y;
+      if(x == 0){
+        console.log(++i+"plot");
+        var d = new Date();
+        var e = d.getTime();
+        $("#text1").text("Date : " +unixtime_to_readable(e));
+        chart.update({
+            series: [{
+              data: data
+            }]
+          })
+        data = []
+        data.push([x, y]);
+      // 
+      }else{
+        console.log(x)
+        data.push([x, y]);
+      }
+  })
+  
+
+// }
+var chart = Highcharts.chart('chart', {
+      chart: {
+        type: 'spline',
+    },
+      title: {
+          text: 'Current'
+      },
+      subtitle: {
+          text: 'XXXXXX'
+      },
+      xAxis: {
+          title: {
+              enabled: true,
+              text: 'Time'
+          },
+          labels: {
+              enabled: false
+          },
+          maxPadding: 0.05,
+          showLastLabel: true,
+          min: 0,
+          max: 199,
+      },
+      yAxis: {
+          title: {
+              text: 'Amp(A)'
+          },
+          labels: {
+              format: '{value}A'
+          },
+          lineWidth: 2,
+          min: -1.8,
+          max: 1.8,
+      },
+      legend: {
+          enabled: false
+      },
+      plotOptions: {
+        series: {
+            marker: {
+                enabled: false
+            }
+        }
+    },
+      series: [{
+          name: 'Amp(A)',
+      }]
+  });
+
+function unixtime_to_readable(unixtime){
+  var MyDate = new Date(unixtime);
+ return ('0' + MyDate.getDate()).slice(-2) + '/'+ ('0' + (MyDate.getMonth()+1)).slice(-2)+'/'+ MyDate.getFullYear()+' '+
+  ('0'+MyDate.getHours()).slice(-2)+':'+ ('0' + MyDate.getMinutes()).slice(-2) + ':'+ ('0' + MyDate.getSeconds()).slice(-2)
+}
+
+</script>
+
+</body>
+</html>
